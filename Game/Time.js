@@ -1,7 +1,9 @@
+import GameObject from "./IGameObject.js";
+
 /**
  * 時間を管理する
  */
-export default class Time
+export default class Time extends GameObject
 {
   /**
    * 過去の時間
@@ -18,6 +20,7 @@ export default class Time
    */
   constructor()
   {
+    super();
     this.#lastTime = Date.now();
   }
 
@@ -33,7 +36,7 @@ export default class Time
   /**
    * 経過時間を更新する
    */
-  Update()
+  AfterUpdate()
   {
     this.#lastTime = Date.now();
   }
