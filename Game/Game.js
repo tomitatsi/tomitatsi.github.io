@@ -1,6 +1,8 @@
 import CreateElementWithProfile from "../component/CreateElementWithProfile.js";
 import You from "./You.js";
 import Color from "../ColorProfile.js";
+import ReferenceOnlyTime from "./ReferenceOnlyTime.js";
+import Stamina from "./Status/Stamina.js";
 
 /**
  * ゲームを管理する
@@ -13,24 +15,14 @@ export default class Game
   #body = $("body");
 
   /**
-   * Time
+   * reference only time
    */
-  #time;
+  #referenceOnlyTime;
 
   /**
-   * You
+   * GameObjects
    */
-  #you;
-
-  /**
-   * 慣性の値要素
-   */
-  #inertiaText;
-
-  /**
-   * 慣性
-   */
-  #inertia = 0;
+  #gameObjects = [];
 
   /**
    * constructor
@@ -38,20 +30,10 @@ export default class Game
    */
   constructor(time)
   {
-    // TODO: ref only time にして各クラスへ渡す
-    this.#time = time;
-    this.#you = new You();
+    this.#referenceOnlyTime = new ReferenceOnlyTime(time);
 
-    let balanceDiv = $(CreateElementWithProfile("div", undefined, this.#body))
-      .css("display", "flex");
-
-    $(CreateElementWithProfile("p", "inertia:", balanceDiv))
-      .css("color", Color.MainText)
-      .css("padding", "0 10px");
-
-    this.#inertiaText = CreateElementWithProfile("p", "0", balanceDiv);
-    $(this.#inertiaText)
-      .css("color", Color.MainText);
+    this.#gameObjects.push(time);
+    this.#gameObjects.push(new You(this.#referenceOnlyTime, new Stamina(10, 0, 100)));
   }
 
   /**
@@ -74,7 +56,7 @@ export default class Game
    */
   BeforeUpdate()
   {
-    this.#inertia += 1 * this.#time.DeltaTick();
+    this.#gameObjects.forEach(gameObject => gameObject.BeforeUpdate());
   }
 
   /**
@@ -82,7 +64,7 @@ export default class Game
    */
   AfterUpdate()
   {
-    this.#time.Update();
+    this.#gameObjects.forEach(gameObject => gameObject.AfterUpdate());
   }
 
   /**
@@ -90,6 +72,6 @@ export default class Game
    */
   Draw()
   {
-    this.#inertiaText.innerText = String(Math.floor(this.#inertia));
+    this.#gameObjects.forEach(gameObject => gameObject.Draw());
   }
 }
